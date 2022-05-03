@@ -18,6 +18,7 @@ namespace Race
         public const ulong SET_PED_INTO_VEHICLE = 0xF75B0D629E1C063D;
         public const ulong SET_VEHICLE_FIXED = 0x115722B1B9C14C1C;
         public const ulong SET_VEHICLE_ENGINE_ON = 0x2497C4717C8B881E;
+        public const ulong STOP_ENTITY_FIRE = 0x7F0DD2EBBB651AFF;
         public const ulong CREATE_OBJECT = 0x509D5878EB39E842;
         public const ulong FREEZE_ENTITY_POSITION = 0x428CA6DBD1094446;
         public const ulong SET_ENTITY_COORDS = 0x06843DA7060A026B;
@@ -349,6 +350,7 @@ namespace Race
                 player.Client.SendNativeCall(SET_ENTITY_COORDS, player.Vehicle, last.X, last.Y, last.Z, 0, 0, 0, 1);
                 player.Client.SendNativeCall(SET_ENTITY_HEADING, player.Vehicle, heading);
                 player.Client.SendNativeCall(SET_PED_INTO_VEHICLE, player.Client.Player.PedHandle, player.Vehicle, -1);
+                player.Client.SendNativeCall(STOP_ENTITY_FIRE, player.Vehicle);
                 player.Client.SendNativeCall(SET_VEHICLE_FIXED, player.Vehicle);
                 player.Client.SendNativeCall(SET_VEHICLE_ENGINE_ON, player.Vehicle, true, true);
             }
