@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{fce38903-779b-44b9-b97e-a255a259e705}") = "WeatherTimeSync", "WeatherTimeSync\WeatherTimeSync.csproj", "{6de39dae-1627-47f6-8d42-0f6e690d665a}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6de39dae-1627-47f6-8d42-0f6e690d665a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6de39dae-1627-47f6-8d42-0f6e690d665a}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6de39dae-1627-47f6-8d42-0f6e690d665a}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6de39dae-1627-47f6-8d42-0f6e690d665a}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0093e6f6-c2f8-40a2-afa3-ba2999f64bde}
+	EndGlobalSection
+EndGlobal
