@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Reference Include="CoopServer">
-      <HintPath>..\..\..\GTACoop-R\Server\bin\Debug\net6.0\CoopServer.dll</HintPath>
+      <HintPath>..\..\..\RAGECOOP-V\Server\bin\Release\net6.0\CoopServer.dll</HintPath>
     </Reference>
   </ItemGroup>
 
