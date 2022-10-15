@@ -1,14 +1,14 @@
-﻿using RageCoop.Client.Scripting;
+﻿using GTA;
+using GTA.Math;
 using GTA.Native;
 using GTA.UI;
-using System.Drawing;
-using GTA;
+using RageCoop.Client.Scripting;
 using System;
-using System.Threading.Tasks;
-using System.Threading;
-using GTA.Math;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -16,41 +16,41 @@ namespace RageCoop.Resources.Race
 {
     public class Main : ClientScript
     {
-        int _countdown=-1;
-        Sprite _fadeoutSprite;
-        readonly List<Vector3> _checkpoints = new List<Vector3>();
-        Blip _nextBlip = null;
-        Blip _secondBlip = null;
-        uint _raceStart;
-        uint _seconds;
-        int _lasttime = Environment.TickCount;
-        bool _isInRace = false;
-        Vector3? _lastCheckPoint;
-        Vehicle _vehicle;
-        int _vehicleHash;
-        byte _primaryColor;
-        byte _secondaryColor;
-        int _cheating = 0;
-        int _playerCount = 0;
-        int _rankingPotition = 0;
-        Settings _settings;
-        float _lastSpeed = 0;
+        private int _countdown = -1;
+        private Sprite _fadeoutSprite;
+        private readonly List<Vector3> _checkpoints = new List<Vector3>();
+        private Blip _nextBlip = null;
+        private Blip _secondBlip = null;
+        private uint _raceStart;
+        private uint _seconds;
+        private int _lasttime = Environment.TickCount;
+        private bool _isInRace = false;
+        private Vector3? _lastCheckPoint;
+        private Vehicle _vehicle;
+        private int _vehicleHash;
+        private byte _primaryColor;
+        private byte _secondaryColor;
+        private int _cheating = 0;
+        private int _playerCount = 0;
+        private int _rankingPotition = 0;
+        private Settings _settings;
+        private float _lastSpeed = 0;
 
         public override void OnStart()
         {
+            Tick += OnTick;
+            KeyDown += OnKeyDown;
             API.RegisterCustomEventHandler(Events.CountDown, CountDown);
             API.RegisterCustomEventHandler(Events.StartCheckpointSequence, Checkpoints);
             API.RegisterCustomEventHandler(Events.JoinRace, JoinRace);
             API.RegisterCustomEventHandler(Events.LeaveRace, LeaveRace);
-            API.RegisterCustomEventHandler(Events.PositionRanking, (e) => {_rankingPotition=(ushort)e.Args[0];_playerCount=(ushort)e.Args[1]; });
-            API.Events.OnTick+=OnTick;
-            API.Events.OnKeyDown+=OnKeyDown;
-            _settings = Settings.ReadSettings(Path.Combine(AppContext.BaseDirectory, CurrentResource.DataFolder, "Settings.xml"));
-            if (_settings.LoadMPMaps)
-                API.QueueAction(() => { Function.Call(Hash.ON_ENTER_MP); });
+            API.RegisterCustomEventHandler(Events.PositionRanking, (e) => { _rankingPotition = (ushort)e.Args[0]; _playerCount = (ushort)e.Args[1]; });
+
+            _settings = Race.Settings.ReadSettings(Path.Combine(AppContext.BaseDirectory, CurrentResource.DataFolder, "Settings.xml"));
+            Function.Call(Hash.ON_ENTER_MP);
         }
 
-        private void OnTick()
+        private void OnTick(object s, EventArgs e)
         {
             var _player = Game.Player.Character;
 
@@ -80,12 +80,12 @@ namespace RageCoop.Resources.Race
             var res = ResolutionMaintainRatio;
             if (_countdown > -1 && _countdown <= 3)
             {
-                new LemonUI.Elements.ScaledText(new Point((int)res.Width/2,260*1080/720), _countdown == 0 ? "GO" : _countdown.ToString()) 
+                new LemonUI.Elements.ScaledText(new Point((int)res.Width / 2, 260 * 1080 / 720), _countdown == 0 ? "GO" : _countdown.ToString())
                 {
                     Alignment = Alignment.Center,
-                    Scale=2f,
-                    Font=GTA.UI.Font.Pricedown,
-                    Color=Color.White 
+                    Scale = 2f,
+                    Font = GTA.UI.Font.Pricedown,
+                    Color = Color.White
                 }.Draw();
                 if (_fadeoutSprite?.Color.A > 2)
                 {
@@ -165,7 +165,7 @@ namespace RageCoop.Resources.Race
                     Function.Call(Hash.PLAY_SOUND_FRONTEND, 0, "CHECKPOINT_NORMAL", "HUD_MINI_GAME_SOUNDSET");
                     _lastCheckPoint = _checkpoints[0];
                     _checkpoints.RemoveAt(0);
-                    API.SendCustomEvent(Events.CheckpointPassed, (object)_checkpoints.Count);
+                    API.SendCustomEvent(Events.CheckpointPassed, _checkpoints.Count);
                     ClearBlips();
                     if (_checkpoints.Count == 0)
                         _isInRace = false;
@@ -210,7 +210,7 @@ namespace RageCoop.Resources.Race
                     _vehicle?.Delete();
                     var model = new Model(_vehicleHash);
                     model.Request(1000);
-                    _vehicle=World.CreateVehicle(model, _lastCheckPoint.Value, heading);
+                    _vehicle = World.CreateVehicle(model, _lastCheckPoint.Value, heading);
                     model.MarkAsNoLongerNeeded();
                     if (_vehicle == null)
                     {
@@ -231,18 +231,21 @@ namespace RageCoop.Resources.Race
         {
             Task.Run(() =>
             {
-                for (_countdown=3;_countdown>=0; _countdown--)
+                for (_countdown = 3; _countdown >= 0; _countdown--)
                 {
                     API.QueueAction(() =>
                     {
                         var w = Convert.ToInt32(Screen.Width / 2);
-                        _fadeoutSprite = new Sprite("mpinventory", "in_world_circle", new SizeF(200, 200), new PointF(w - 100, 200), _countdown == 0 ? Color.FromArgb(150,49, 235, 126) : Color.FromArgb(150,241, 247, 57));
+                        _fadeoutSprite = new Sprite("mpinventory", "in_world_circle", new SizeF(200, 200), new PointF(w - 100, 200), _countdown == 0 ? Color.FromArgb(150, 49, 235, 126) : Color.FromArgb(150, 241, 247, 57));
                         Function.Call(Hash.REQUEST_SCRIPT_AUDIO_BANK, "HUD_MINI_GAME_SOUNDSET", true);
                         Function.Call(Hash.PLAY_SOUND_FRONTEND, 0, "CHECKPOINT_NORMAL", "HUD_MINI_GAME_SOUNDSET");
                     });
+                    if (_countdown == 0)
+                    {
+                        StartRace();
+                    }
                     Thread.Sleep(1000);
                 }
-                StartRace();
             });
         }
 
@@ -263,9 +266,10 @@ namespace RageCoop.Resources.Race
         private void Checkpoints(CustomEventReceivedArgs obj)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            API.QueueAction(() => {
+            API.QueueAction(() =>
+            {
                 SaveVehicle();
-                if (_vehicle==null && sw.ElapsedMilliseconds<10000)
+                if (_vehicle == null && sw.ElapsedMilliseconds < 10000)
                 {
                     return false;
                 }
@@ -277,14 +281,14 @@ namespace RageCoop.Resources.Race
                 }
             });
             _checkpoints.Clear();
-            _lastCheckPoint=null;
+            _lastCheckPoint = null;
             foreach (var item in obj.Args)
                 _checkpoints.Add((Vector3)item);
             API.QueueAction(() => { ClearBlips(); });
             var sw2 = System.Diagnostics.Stopwatch.StartNew();
             API.QueueAction(() =>
             {
-                if (sw2.ElapsedMilliseconds<10000)
+                if (sw2.ElapsedMilliseconds < 10000)
                 {
                     Screen.ShowHelpTextThisFrame("Press ~INPUT_VEH_CIN_CAM~ to reset your vehicle");
                     return false;
@@ -327,7 +331,7 @@ namespace RageCoop.Resources.Race
         public override void OnStop()
         {
             _checkpoints.Clear();
-            API.QueueAction(() => { ClearBlips(); });
+            ClearBlips();
         }
 
         public string FormatTime(uint seconds)

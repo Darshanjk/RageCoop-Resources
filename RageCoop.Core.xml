@@ -4,6 +4,12 @@
         <name>RageCoop.Core</name>
     </assembly>
     <members>
+        <member name="M:RageCoop.Core.CoreUtils.GetLocalAddress">
+            <summary>
+            Get local ip addresses on all network interfaces 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RageCoop.Core.Extensions.GetBytes(GTA.Math.Quaternion)">
             <summary>
             
@@ -47,19 +53,14 @@
             0:Trace, 1:Debug, 2:Info, 3:Warning, 4:Error
             </summary>
         </member>
-        <member name="P:RageCoop.Core.Logger.Name">
+        <member name="F:RageCoop.Core.Logger.Name">
             <summary>
             Name of this logger
             </summary>
         </member>
-        <member name="F:RageCoop.Core.Logger.LogPath">
+        <member name="F:RageCoop.Core.Logger.UseUtc">
             <summary>
-            Path to log file.
-            </summary>
-        </member>
-        <member name="F:RageCoop.Core.Logger.UseConsole">
-            <summary>
-            Whether to flush messages to console instead of log file
+            Whether to use UTC time for timestamping the log
             </summary>
         </member>
         <member name="M:RageCoop.Core.Logger.Info(System.String)">
@@ -130,6 +131,11 @@
             Terminate all connections and background thread
             </summary>
         </member>
+        <member name="T:RageCoop.Core.ServerInfo">
+            <summary>
+            A json object representing a server's information as annouced to master server.
+            </summary>
+        </member>
         <member name="P:RageCoop.Core.Packets.HolePunch.Status">
             <summary>
             1:initial, 2:acknowledged, 3:confirmed
@@ -165,6 +171,57 @@
             Ped ID for this Player
             </summary>
         </member>
+        <member name="T:RageCoop.Core.Scripting.CustomEventFlags">
+            <summary>
+            Describes how the event should be sent or processed
+            </summary>
+        </member>
+        <member name="F:RageCoop.Core.Scripting.CustomEventFlags.Encrypted">
+            <summary>
+            Data will be encrypted and decrypted on target client
+            </summary>
+        </member>
+        <member name="F:RageCoop.Core.Scripting.CustomEventFlags.Queued">
+            <summary>
+            Event will be queued and fired in script thread, specify this flag if your handler will call native functions.
+            </summary>
+        </member>
+        <member name="T:RageCoop.Core.Scripting.CustomEventHash">
+            <summary>
+            Struct to identify different event using hash
+            </summary>
+        </member>
+        <member name="F:RageCoop.Core.Scripting.CustomEventHash.Hash">
+            <summary>
+            Hash value
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.Scripting.CustomEventHash.op_Implicit(System.Int32)~RageCoop.Core.Scripting.CustomEventHash">
+            <summary>
+            Create from hash
+            </summary>
+            <param name="hash"></param>
+        </member>
+        <member name="M:RageCoop.Core.Scripting.CustomEventHash.op_Implicit(System.String)~RageCoop.Core.Scripting.CustomEventHash">
+            <summary>
+            Create from string
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:RageCoop.Core.Scripting.CustomEventHash.FromString(System.String)">
+            <summary>
+            Get a Int32 hash of a string.
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">The exception is thrown when the name did not match a previously computed one and the hash was the same.</exception>
+        </member>
+        <member name="M:RageCoop.Core.Scripting.CustomEventHash.op_Implicit(RageCoop.Core.Scripting.CustomEventHash)~System.Int32">
+            <summary>
+            To int
+            </summary>
+            <param name="h"></param>
+        </member>
         <member name="T:RageCoop.Core.Scripting.CustomEvents">
             <summary>
             
@@ -172,11 +229,10 @@
         </member>
         <member name="M:RageCoop.Core.Scripting.CustomEvents.Hash(System.String)">
             <summary>
-            Get a Int32 hash of a string.
+            Get event hash from string.
             </summary>
-            <param name="s"></param>
             <returns></returns>
-            <exception cref="T:System.ArgumentException">The exception is thrown when the name did not match a previously computed one and the hash was the same.</exception>
+            <remarks>This method is obsoete, you should use implicit operator or <see cref="M:RageCoop.Core.Scripting.CustomEventHash.FromString(System.String)"/></remarks>
         </member>
         <member name="T:RageCoop.Core.Scripting.ResourceFile">
             <summary>
