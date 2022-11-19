@@ -1,11 +1,7 @@
 ﻿using DiscUtils.Iso9660;
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
-using RageCoop.Core;
-using RageCoop.Server;
-using RageCoop.Client;
 using System.Diagnostics;
-using RageCoop.Client.Scripting;
 using System.Reflection;
 using System.Linq;
 
@@ -19,11 +15,8 @@ internal class ResourceManifest
 }
 public class Program
 {
-    static HashSet<string> ApiAssemblies = new();
     public static void Main(string[] args)
     {
-        CoreUtils.GetDependencies(typeof(Server).Assembly, ref ApiAssemblies);
-        CoreUtils.GetDependencies(typeof(ClientScript).Assembly, ref ApiAssemblies);
 
         File.WriteAllText("ResourceManifest.json", JsonConvert.SerializeObject(new ResourceManifest(), Formatting.Indented));
         var targets = args;
@@ -63,17 +56,31 @@ public class Program
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Failed to build resource:{dir}\n{ex}");
+                    ColoredLine($"Failed to build resource:{dir}\n{ex}", ConsoleColor.Red);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                ColoredLine(ex.ToString(), ConsoleColor.Red);
             }
 
         }
     }
 
+    static void ColoredLine(string line, ConsoleColor color)
+    {
+        var prev = Console.ForegroundColor;
+        Console.ForegroundColor = color;
+        if (color == ConsoleColor.Red)
+        {
+            Console.Error.WriteLine(line);
+        }
+        else
+        {
+            Console.WriteLine(line);
+        }
+        Console.ForegroundColor = prev;
+    }
     private static void BuildResource(ResourceManifest manifest, string workingDir)
     {
         List<string> builtFolders = new List<string>();
@@ -95,7 +102,7 @@ public class Program
         foreach (var f in Directory.GetFiles(workingDir, "*.respkg")) { File.Delete(f); }
         Console.WriteLine("Packaging to " + output);
         PackFinal(Path.Combine(workingDir, "bin", "tmp"), output, Path.Combine(workingDir, "ResourceManifest.json"));
-        Console.WriteLine($"Resource \"{manifest.Name}\" built successfully");
+        ColoredLine($"Resource \"{manifest.Name}\" built successfully", ConsoleColor.Green);
 
         void Build(string project, bool client)
         {
@@ -126,7 +133,7 @@ public class Program
             }
             foreach (var file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories))
             {
-                if ((file.EndsWith(".dll") && ApiAssemblies.Contains(AssemblyName.GetAssemblyName(file).FullName)) || file.CanBeIgnored()) { continue; }
+                // if (file.) { continue; }
                 zip.Add(file, file[(folder.Length + 1)..]);
             }
             zip.CommitUpdate();

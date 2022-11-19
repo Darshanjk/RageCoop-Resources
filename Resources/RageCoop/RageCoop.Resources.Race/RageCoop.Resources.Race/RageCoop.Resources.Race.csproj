@@ -26,9 +26,6 @@
 	  <Reference Include="RageCoop.Server">
 	    <HintPath>..\..\..\..\RageCoop.Server.dll</HintPath>
 	  </Reference>
-	  <Reference Include="ScriptHookVDotNet">
-	    <HintPath>..\..\..\..\ScriptHookVDotNet.dll</HintPath>
-	  </Reference>
 	  <Reference Include="ScriptHookVDotNet3">
 	    <HintPath>..\..\..\..\ScriptHookVDotNet3.dll</HintPath>
 	  </Reference>
