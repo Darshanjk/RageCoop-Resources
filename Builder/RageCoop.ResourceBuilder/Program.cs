@@ -47,7 +47,7 @@ public class Program
                 var manifest = JsonConvert.DeserializeObject<ResourceManifest>(File.ReadAllText(manifestPath));
                 if (Path.GetFileName(dir) != manifest.Name || manifest.Name.Contains(' '))
                 {
-                    Console.Error.WriteLine($"Illegal resource name \"{manifest.Name}\" in manifest from directory \"{dir}\"");
+                    Console.Error.WriteLine($"Illegal resource name \"{manifest.Name}\" in manifest from directory \"{dir}\", expected: \"{Path.GetFileName(dir)}\"");
                     continue;
                 }
                 try
@@ -83,7 +83,7 @@ public class Program
     }
     private static void BuildResource(ResourceManifest manifest, string workingDir)
     {
-        List<string> builtFolders = new List<string>();
+        List<string> builtFolders = new();
         var binPath = Path.Combine(workingDir, "bin");
         if (Directory.Exists(binPath)) { Directory.Delete(binPath, true); }
         foreach (var c in manifest.ClientResources)
@@ -107,13 +107,13 @@ public class Program
         void Build(string project, bool client)
         {
             var proc = new Process();
-            var s = client ? "Client" : "Server";
-            var buildPath = $"bin/tmp/{s}/{Path.GetFileNameWithoutExtension(project)}";
+            var buildPath = $"bin/tmp/{(client ? "Client" : "Server")}/{Path.GetFileNameWithoutExtension(project)}";
+            var extraArgs = "";
             proc.StartInfo = new ProcessStartInfo()
             {
                 WorkingDirectory = workingDir,
                 FileName = "dotnet",
-                Arguments = $"publish \"{project}\" --configuration Release -o \"{buildPath}\""
+                Arguments = $"publish \"{project}\" --configuration Release -o \"{buildPath}\" {extraArgs}"
             };
             proc.Start();
             proc.WaitForExit();
@@ -133,7 +133,6 @@ public class Program
             }
             foreach (var file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories))
             {
-                // if (file.) { continue; }
                 zip.Add(file, file[(folder.Length + 1)..]);
             }
             zip.CommitUpdate();

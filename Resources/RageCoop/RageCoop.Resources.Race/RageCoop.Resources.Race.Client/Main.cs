@@ -2,6 +2,7 @@
 using GTA.Math;
 using GTA.Native;
 using GTA.UI;
+using RageCoop.Core.Scripting;
 using RageCoop.Client.Scripting;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
+using API = RageCoop.Client.Scripting.APIBridge;
+using Newtonsoft.Json;
 
 namespace RageCoop.Resources.Race
 {
@@ -36,22 +38,27 @@ namespace RageCoop.Resources.Race
         private Settings _settings;
         private float _lastSpeed = 0;
 
-        public override void OnStart()
+        protected override void OnStart()
         {
-            Tick += OnTick;
-            KeyDown += OnKeyDown;
+            Notification.Show("Race resource loaded");
+
             API.RegisterCustomEventHandler(Events.CountDown, CountDown);
             API.RegisterCustomEventHandler(Events.StartCheckpointSequence, Checkpoints);
             API.RegisterCustomEventHandler(Events.JoinRace, JoinRace);
             API.RegisterCustomEventHandler(Events.LeaveRace, LeaveRace);
             API.RegisterCustomEventHandler(Events.PositionRanking, (e) => { _rankingPotition = (ushort)e.Args[0]; _playerCount = (ushort)e.Args[1]; });
 
-            _settings = Race.Settings.ReadSettings(Path.Combine(AppContext.BaseDirectory, CurrentResource.DataFolder, "Settings.xml"));
-            Function.Call(Hash.ON_ENTER_MP);
+            _settings = Settings.ReadSettings(Path.Combine(AppContext.BaseDirectory, CurrentResource.DataFolder, "Settings.json"));
+
+            if (_settings.LoadMPMaps)
+                Function.Call(Hash.ON_ENTER_MP);
+
+            Aborted += (e) => { if (e.IsUnloading) Cleanup(); };
         }
 
-        private void OnTick(object s, EventArgs e)
+        protected override void OnTick()
         {
+            base.OnTick();
             var _player = Game.Player.Character;
 
             if (Environment.TickCount >= _lasttime + 1000)
@@ -184,8 +191,10 @@ namespace RageCoop.Resources.Race
             }
         }
 
-        private void OnKeyDown(object s, System.Windows.Forms.KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
+            base.OnKeyDown(e);
+
             if (API.IsChatFocused)
                 return;
             if (Game.IsControlJustPressed(Control.VehicleCinCam))
@@ -200,7 +209,7 @@ namespace RageCoop.Resources.Race
             Task.Run(() =>
             {
                 Thread.Sleep(1000);
-                API.QueueAction(() =>
+                QueueAction(() =>
                 {
                     var dir = _checkpoints[0] - _lastCheckPoint.Value;
                     var heading = (float)(-Math.Atan2(dir.X, dir.Y) * 180.0 / Math.PI);
@@ -233,7 +242,7 @@ namespace RageCoop.Resources.Race
             {
                 for (_countdown = 3; _countdown >= 0; _countdown--)
                 {
-                    API.QueueAction(() =>
+                    QueueAction(() =>
                     {
                         var w = Convert.ToInt32(Screen.Width / 2);
                         _fadeoutSprite = new Sprite("mpinventory", "in_world_circle", new SizeF(200, 200), new PointF(w - 100, 200), _countdown == 0 ? Color.FromArgb(150, 49, 235, 126) : Color.FromArgb(150, 241, 247, 57));
@@ -266,7 +275,7 @@ namespace RageCoop.Resources.Race
         private void Checkpoints(CustomEventReceivedArgs obj)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            API.QueueAction(() =>
+            QueueAction(() =>
             {
                 SaveVehicle();
                 if (_vehicle == null && sw.ElapsedMilliseconds < 10000)
@@ -284,9 +293,9 @@ namespace RageCoop.Resources.Race
             _lastCheckPoint = null;
             foreach (var item in obj.Args)
                 _checkpoints.Add((Vector3)item);
-            API.QueueAction(() => { ClearBlips(); });
+            QueueAction(ClearBlips);
             var sw2 = System.Diagnostics.Stopwatch.StartNew();
-            API.QueueAction(() =>
+            QueueAction(() =>
             {
                 if (sw2.ElapsedMilliseconds < 10000)
                 {
@@ -302,21 +311,21 @@ namespace RageCoop.Resources.Race
 
         private void StartRace()
         {
-            API.QueueAction(() => { _lastCheckPoint = _vehicle?.Position; });
+            QueueAction(() => { _lastCheckPoint = _vehicle?.Position; });
             _raceStart = _seconds;
             _isInRace = true;
         }
 
         private void JoinRace(CustomEventReceivedArgs obj)
         {
-            API.QueueAction(() => { SaveVehicle(); });
+            QueueAction(SaveVehicle);
             StartRace();
         }
 
         private void LeaveRace(CustomEventReceivedArgs obj)
         {
             _checkpoints.Clear();
-            API.QueueAction(() => { ClearBlips(); });
+            QueueAction(ClearBlips);
             _isInRace = false;
         }
 
@@ -328,7 +337,7 @@ namespace RageCoop.Resources.Race
             _secondBlip = null;
         }
 
-        public override void OnStop()
+        void Cleanup()
         {
             _checkpoints.Clear();
             ClearBlips();
@@ -384,25 +393,20 @@ namespace RageCoop.Resources.Race
 
     public class Settings
     {
-        public bool LoadMPMaps { get; set; }
-
-        public Settings()
-        {
-            LoadMPMaps = true;
-        }
+        public bool LoadMPMaps { get; set; } = true;
 
         public static Settings ReadSettings(string path)
         {
-            var ser = new XmlSerializer(typeof(Settings));
-            var xmlSettings = new XmlWriterSettings()
+            Settings settings;
+            try
             {
-                Indent = true,
-            };
-            Settings settings = null;
-            if (File.Exists(path))
-                using (var stream = XmlReader.Create(path)) settings = (Settings)ser.Deserialize(stream);
-            else
-                using (var stream = XmlWriter.Create(path, xmlSettings)) ser.Serialize(stream, settings = new Settings());
+                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(path));
+            }
+            catch
+            {
+                settings = new();
+                File.WriteAllText(path, JsonConvert.SerializeObject(settings));
+            }
             return settings;
         }
     }

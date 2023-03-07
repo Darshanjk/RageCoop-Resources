@@ -134,7 +134,7 @@ namespace RageCoop.Resources.Race
                 {
                     var p = API.Entities.CreateProp(prop.Hash, prop.Position, prop.Rotation);
                     if (prop.Texture > 0 && prop.Texture < 16)
-                        API.SendNativeCall(null, Hash._SET_OBJECT_TEXTURE_VARIATION, p.Handle, prop.Texture);
+                        API.SendNativeCall(null, Hash.SET_OBJECT_TINT_INDEX, p.Handle, prop.Texture);
                 }
 
                 Checkpoints.Clear();
@@ -213,7 +213,7 @@ namespace RageCoop.Resources.Race
                 try
                 {
                     var cayo = Session.Map.SpawnPoints[0].Position.DistanceTo2D(new Vector2(4700f, -5145f)) < 2000f;
-                    client.SendNativeCall(Hash._SET_ISLAND_HOPPER_ENABLED, "HeistIsland", cayo);
+                    client.SendNativeCall(Hash.SET_ISLAND_ENABLED, "HeistIsland", cayo);
                     var position = Session.Map.SpawnPoints[spawnPoint % Session.Map.SpawnPoints.Length].Position;
                     var heading = Session.Map.SpawnPoints[spawnPoint % Session.Map.SpawnPoints.Length].Heading;
                     client.Player.Position = position + new Vector3(4, 0, 1);
@@ -221,7 +221,7 @@ namespace RageCoop.Resources.Race
                     var vehicle = API.Entities.CreateVehicle(client, player.VehicleHash, position, heading);
                     Thread.Sleep(1000);
                     client.SendNativeCall(Hash.SET_PED_INTO_VEHICLE, client.Player.Handle, vehicle.Handle, -1);
-                    client.SendNativeCall(Hash._SET_AI_GLOBAL_PATH_NODES_TYPE, cayo);
+                    client.SendNativeCall(Hash.SET_ALLOW_STREAM_HEIST_ISLAND_NODES, cayo);
                     client.SendCustomEvent(Events.StartCheckpointSequence, Checkpoints.ToArray());
                     if (Session.State == State.Started)
                     {

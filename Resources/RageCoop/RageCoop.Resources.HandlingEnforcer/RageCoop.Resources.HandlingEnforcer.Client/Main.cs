@@ -2,6 +2,8 @@
 using RageCoop.Client.Scripting;
 using System.Collections.Generic;
 using System.IO;
+using API = RageCoop.Client.Scripting.APIBridge;
+using GTA;
 
 namespace RageCoop.Resources.HandlingEnforcer.Client
 {
@@ -9,12 +11,12 @@ namespace RageCoop.Resources.HandlingEnforcer.Client
     {
         private readonly Dictionary<int, HandlingData> HandlingDatamn = new Dictionary<int, HandlingData>();
         private readonly Dictionary<GTA.HandlingData, HandlingData> ModifiedHandlings = new Dictionary<GTA.HandlingData, HandlingData>();
-        public override void OnStart()
+        protected override void OnStart()
         {
             API.RequestSharedFile("handling.json", Load);
-            KeyDown += (s, e) =>
+            KeyDown += (e) =>
             {
-                if (e.KeyCode == System.Windows.Forms.Keys.U)
+                if (e.KeyCode == Keys.U)
                 {
                     ExportAll();
                     GTA.UI.Notification.Show("handling.json exported to working directory");
@@ -41,7 +43,7 @@ namespace RageCoop.Resources.HandlingEnforcer.Client
                 }
             }
             API.Events.OnVehicleSpawned += ApplyHandling;
-            API.QueueAction(() =>
+            QueueAction(() =>
             {
                 foreach (var v in GTA.World.GetAllVehicles())
                 {
@@ -89,13 +91,14 @@ namespace RageCoop.Resources.HandlingEnforcer.Client
                 }
             }
         }
-        public override void OnStop()
+        protected override void OnAborted(GTA.AbortedEventArgs args)
         {
             // Restore modified handling data
             foreach (var p in ModifiedHandlings)
             {
                 p.Value.ApplyTo(p.Key);
             }
+            ModifiedHandlings.Clear();
         }
     }
 }

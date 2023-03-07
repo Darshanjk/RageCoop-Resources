@@ -1,22 +1,22 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v6.0",
+    "name": ".NETCoreApp,Version=v7.0",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v6.0": {
+    ".NETCoreApp,Version=v7.0": {
       "RageCoop.ResourceBuilder/1.0.0": {
         "dependencies": {
           "DiscUtils.Iso9660": "0.16.13",
           "Newtonsoft.Json": "13.0.1",
           "SharpZipLib": "1.3.3",
-          "LemonUI.SHVDN3": "1.7.0.0",
-          "RageCoop.Client": "1.6.0.0",
+          "LemonUI.SHVDNC": "1.5.1.0",
+          "Lidgren.Network": "2012.1.7.0",
+          "RageCoop.Client.Scripting": "1.0.0.0",
           "RageCoop.Core": "0.1.0.0",
-          "RageCoop.Server": "1.6.0.2",
-          "ScriptHookVDotNet2": "2.11.5.0",
-          "ScriptHookVDotNet3": "3.5.1.0"
+          "RageCoop.Server": "1.6.0.38",
+          "ScriptHookVDotNetCore": "1.0.0.0"
         },
         "runtime": {
           "RageCoop.ResourceBuilder.dll": {}
@@ -77,19 +77,27 @@
         }
       },
       "System.Security.Principal.Windows/5.0.0": {},
-      "LemonUI.SHVDN3/1.7.0.0": {
+      "LemonUI.SHVDNC/1.5.1.0": {
         "runtime": {
-          "LemonUI.SHVDN3.dll": {
-            "assemblyVersion": "1.7.0.0",
-            "fileVersion": "1.7.0.0"
+          "LemonUI.SHVDNC.dll": {
+            "assemblyVersion": "1.5.1.0",
+            "fileVersion": "1.5.1.0"
           }
         }
       },
-      "RageCoop.Client/1.6.0.0": {
+      "Lidgren.Network/2012.1.7.0": {
         "runtime": {
-          "RageCoop.Client.dll": {
-            "assemblyVersion": "1.6.0.0",
-            "fileVersion": "1.6.0.0"
+          "Lidgren.Network.dll": {
+            "assemblyVersion": "2012.1.7.0",
+            "fileVersion": "2012.1.7.0"
+          }
+        }
+      },
+      "RageCoop.Client.Scripting/1.0.0.0": {
+        "runtime": {
+          "RageCoop.Client.Scripting.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       },
@@ -101,27 +109,19 @@
           }
         }
       },
-      "RageCoop.Server/1.6.0.2": {
+      "RageCoop.Server/1.6.0.38": {
         "runtime": {
           "RageCoop.Server.dll": {
-            "assemblyVersion": "1.6.0.2",
-            "fileVersion": "1.6.0.2"
+            "assemblyVersion": "1.6.0.38",
+            "fileVersion": "1.6.0.38"
           }
         }
       },
-      "ScriptHookVDotNet2/2.11.5.0": {
+      "ScriptHookVDotNetCore/1.0.0.0": {
         "runtime": {
-          "ScriptHookVDotNet2.dll": {
-            "assemblyVersion": "2.11.5.0",
-            "fileVersion": "2.10.13.0"
-          }
-        }
-      },
-      "ScriptHookVDotNet3/3.5.1.0": {
-        "runtime": {
-          "ScriptHookVDotNet3.dll": {
-            "assemblyVersion": "3.5.1.0",
-            "fileVersion": "3.5.1.0"
+          "ScriptHookVDotNetCore.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       }
@@ -189,12 +189,17 @@
       "path": "system.security.principal.windows/5.0.0",
       "hashPath": "system.security.principal.windows.5.0.0.nupkg.sha512"
     },
-    "LemonUI.SHVDN3/1.7.0.0": {
+    "LemonUI.SHVDNC/1.5.1.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "RageCoop.Client/1.6.0.0": {
+    "Lidgren.Network/2012.1.7.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "RageCoop.Client.Scripting/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -204,17 +209,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "RageCoop.Server/1.6.0.2": {
+    "RageCoop.Server/1.6.0.38": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "ScriptHookVDotNet2/2.11.5.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ScriptHookVDotNet3/3.5.1.0": {
+    "ScriptHookVDotNetCore/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

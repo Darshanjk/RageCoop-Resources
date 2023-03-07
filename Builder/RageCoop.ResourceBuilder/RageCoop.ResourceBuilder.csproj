@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutDir>..\..\</OutDir>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
@@ -14,8 +14,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="RageCoop.Client">
-			<HintPath>..\..\..\RAGECOOP-V\bin\API\RageCoop.Client.dll</HintPath>
+		<Reference Include="LemonUI.SHVDNC">
+		  <HintPath>..\..\..\RAGECOOP-V\libs\LemonUI.SHVDNC.dll</HintPath>
+		</Reference>
+		<Reference Include="Lidgren.Network">
+		  <HintPath>..\..\..\RAGECOOP-V\bin\API\Lidgren.Network.dll</HintPath>
+		</Reference>
+		<Reference Include="RageCoop.Client.Scripting">
+		  <HintPath>..\..\..\RAGECOOP-V\bin\API\RageCoop.Client.Scripting.dll</HintPath>
 		</Reference>
 		<Reference Include="RageCoop.Core">
 			<HintPath>..\..\..\RAGECOOP-V\bin\API\RageCoop.Core.dll</HintPath>
@@ -23,15 +29,13 @@
 		<Reference Include="RageCoop.Server">
 			<HintPath>..\..\..\RAGECOOP-V\bin\API\RageCoop.Server.dll</HintPath>
 		</Reference>
-		<Reference Include="ScriptHookVDotNet2">
-			<HintPath>..\..\..\RAGECOOP-V\libs\ScriptHookVDotNet2.dll</HintPath>
-		</Reference>
-		<Reference Include="ScriptHookVDotNet3">
-			<HintPath>..\..\..\RAGECOOP-V\libs\ScriptHookVDotNet3.dll</HintPath>
-		</Reference>
-		<Reference Include="LemonUI.SHVDN3">
-			<HintPath>..\..\..\RAGECOOP-V\libs\LemonUI.SHVDN3.dll</HintPath>
+		<Reference Include="ScriptHookVDotNetCore">
+		  <HintPath>..\..\..\RAGECOOP-V\bin\API\ScriptHookVDotNetCore.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="del $(OutDir)*.exe&#xD;&#xA;del $(OutDir)*.dll&#xD;&#xA;del $(OutDir)*.json&#xD;&#xA;del $(OutDir)*.pdb&#xD;&#xA;del $(OutDir)*.xml" />
+	</Target>
 
 </Project>

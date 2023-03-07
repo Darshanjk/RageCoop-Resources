@@ -4,6 +4,87 @@
         <name>RageCoop.Core</name>
     </assembly>
     <members>
+        <member name="P:RageCoop.Core.Buffer.Size">
+            <summary>
+            Size of this buffer in memory
+            </summary>
+        </member>
+        <member name="P:RageCoop.Core.Buffer.Position">
+            <summary>
+            The current read/write index
+            </summary>
+        </member>
+        <member name="P:RageCoop.Core.Buffer.Address">
+            <summary>
+            Pointer to the start of this buffer
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.Buffer.Alloc(System.Int32)">
+            <summary>
+            Ensure memory safety and advance position by specified number of bytes
+            </summary>
+            <param name="cbSize"></param>
+            <returns>Pointer to the current position in the buffer</returns>
+        </member>
+        <member name="M:RageCoop.Core.Buffer.Reset">
+            <summary>
+            Reset position to the start of this buffer
+            </summary>
+        </member>
+        <member name="F:RageCoop.Core.BufferWriter.ThreadLocal">
+            <summary>
+            Gets a thread local instance of this writer
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.BufferWriter.WriteVal``1(``0)">
+            <summary>
+            For passing struct smaller than word size (4/8 bytes on 32/64 bit system)
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+        </member>
+        <member name="M:RageCoop.Core.BufferWriter.WriteArray``1(``0[])">
+            <summary>
+            Write an array, prefix the data with its length so it can latter be read using <see cref="M:RageCoop.Core.BufferReader.ReadArray``1"/>
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.BufferWriter.ToByteArray(System.Int32)">
+            <summary>
+            Allocate a byte array on managed heap and copy the data of specified size to it 
+            </summary>
+            <param name="cbSize"></param>
+            <returns>The newly created managed byte array</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="M:RageCoop.Core.BufferWriter.Free">
+            <summary>
+            Free the associated memory allocated on the unmanaged heap
+            </summary>
+        </member>
+        <member name="F:RageCoop.Core.BufferReader.ThreadLocal">
+            <summary>
+            Gets a thread local instance of this reader
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.BufferReader.#ctor">
+            <summary>
+            Initialize an empty instance, needs to call <see cref="M:RageCoop.Core.BufferReader.Initialise(System.Byte*,System.Int32)"/> before reading data
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.BufferReader.Read``1(System.Span{``0})">
+            <summary>
+            Read a span of type <typeparamref name="T"/> from current position to <paramref name="destination"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="destination"></param>
+        </member>
+        <member name="M:RageCoop.Core.BufferReader.ReadArray``1">
+            <summary>
+            Reads an array previously written using <see cref="M:RageCoop.Core.BufferWriter.WriteArray``1(``0[])"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
         <member name="M:RageCoop.Core.CoreUtils.GetLocalAddress">
             <summary>
                 Get local ip addresses on all network interfaces
@@ -12,7 +93,7 @@
         </member>
         <member name="M:RageCoop.Core.CoreUtils.JoaatHash(System.String)">
             <summary>
-            Generate jenkins one-at-a-time hash from specified string (lower)
+                Generate jenkins one-at-a-time hash from specified string (lower)
             </summary>
             <param name="key"></param>
             <returns></returns>
@@ -166,6 +247,29 @@
                 Ped ID for this Player
             </summary>
         </member>
+        <member name="T:RageCoop.Core.Scripting.CustomEventReceivedArgs">
+            <summary>
+            </summary>
+        </member>
+        <member name="P:RageCoop.Core.Scripting.CustomEventReceivedArgs.Hash">
+            <summary>
+                The event hash
+            </summary>
+        </member>
+        <member name="P:RageCoop.Core.Scripting.CustomEventReceivedArgs.Args">
+            <summary>
+                Supported types: byte, short, ushort, int, uint, long, ulong, float, bool, string, Vector3, Quaternion
+            </summary>
+        </member>
+        <member name="M:RageCoop.Core.Scripting.CustomEventHandler.Invoke(System.Int32,System.Byte*,System.Int32,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="hash"></param>
+            <param name="data"></param>
+            <param name="cbData"></param>
+            <param name="tag">Only works when using <see cref="T:RageCoop.Core.Scripting.CustomEventReceivedArgs"/></param>
+        </member>
         <member name="T:RageCoop.Core.Scripting.CustomEventFlags">
             <summary>
                 Describes how the event should be sent or processed
@@ -222,16 +326,8 @@
         </member>
         <member name="T:RageCoop.Core.Scripting.CustomEvents">
             <summary>
+            Common processing for custome client\server events
             </summary>
-        </member>
-        <member name="M:RageCoop.Core.Scripting.CustomEvents.Hash(System.String)">
-            <summary>
-                Get event hash from string.
-            </summary>
-            <returns></returns>
-            <remarks>
-                This method is obsoete, you should use implicit operator or <see cref="M:RageCoop.Core.Scripting.CustomEventHash.FromString(System.String)" />
-            </remarks>
         </member>
         <member name="T:RageCoop.Core.Scripting.ResourceFile">
             <summary>
@@ -251,6 +347,18 @@
             <summary>
                 Get a stream that can be used to read file content.
             </summary>
+        </member>
+        <member name="M:RageCoop.Core.Shared.GetReader(System.Byte*,System.Int32)">
+            <summary>
+            Shortcut to <see cref="F:RageCoop.Core.BufferReader.ThreadLocal"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RageCoop.Core.Shared.GetWriter(System.Boolean)">
+            <summary>
+            Shortcut to <see cref="F:RageCoop.Core.BufferWriter.ThreadLocal"/>
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:RageCoop.Core.Worker">
             <summary>
@@ -282,6 +390,12 @@
             <summary>
                 Finish current job and stop the worker.
             </summary>
+        </member>
+        <member name="T:RageCoop.Core.XSpan`1">
+            <summary>
+            A light-weight and less restricted implementation of <see cref="T:System.Span`1"/>, gonna be used at some point, maybe?
+            </summary>
+            <typeparam name="T"></typeparam>
         </member>
     </members>
 </doc>
