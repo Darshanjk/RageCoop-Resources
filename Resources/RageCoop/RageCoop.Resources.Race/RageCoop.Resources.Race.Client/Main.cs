@@ -261,6 +261,9 @@ namespace RageCoop.Resources.Race
         private void SaveVehicle()
         {
             _vehicle = Game.Player.Character.CurrentVehicle;
+            if (_vehicle == null)
+                return;
+
             _vehicleHash = _vehicle.Model.Hash;
             byte primaryColor = 0;
             byte secondaryColor = 0;
